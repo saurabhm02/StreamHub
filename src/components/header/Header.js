@@ -8,7 +8,8 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import { FaCircleUser } from "react-icons/fa6";
 import { IoIosSearch } from "react-icons/io";
 import { useDispatch } from 'react-redux';
-import { toggleMenu } from '../../utils/appSlice';
+import { toggleMenu, toggleSideBar } from '../../utils/appSlice';
+import { useLocation } from 'react-router-dom';
 
 
 const Header = () => {
@@ -29,6 +30,8 @@ const Header = () => {
             setTheme("light");
         }
     }
+
+    const route = useLocation();
  
     const dispatch = useDispatch();
 
@@ -37,13 +40,15 @@ const Header = () => {
     }
   return (
     <>
-        <div className="flex justify-between px-5 py-3 sticky w-full shadow-lg items-center">
+        <div className=" sticky top-0 z-50 bg-white flex justify-between px-5 py-3 w-full shadow-lg items-center">
             <div className="flex ">
-               <button className="rounded-full hover:bg-zinc-100 p-2">
-                <RiMenuUnfoldLine 
-                        className="cursor-pointer "
-                        onClick={() => toggleMenuHandler()}
-                    />
+               <button 
+                    onClick={
+                     toggleMenuHandler
+                    }
+                    className="rounded-full hover:bg-zinc-100 p-2"
+                >
+                    <RiMenuUnfoldLine className="cursor-pointer "/>
                </button>
                 <div className="flex items-start max-md:hidden logo cursor-pointer p-2">
                     <a href="/">

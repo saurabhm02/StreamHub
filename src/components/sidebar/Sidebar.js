@@ -11,7 +11,8 @@ import { BsFire } from "react-icons/bs";
 import { CgShoppingBag } from "react-icons/cg";
 import { GiClapperboard, GiAerialSignal, GiHanger } from "react-icons/gi";
 import { IoNewspaperOutline } from "react-icons/io5";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 // import { Link } from 'react-router-dom';
 
 
@@ -19,20 +20,15 @@ function Sidebar() {
 
   const isMenuOpen = useSelector((store) => store.app.isMenuOpen); 
 
-  // early return if menu is not open
-  if(!isMenuOpen) {
-    return null;
-  }
-
 
   return !isMenuOpen ? (
-        <div className=" flex flex-col text-xs w-18 pr-1 items-center border-r transition-all duration-300">
-          <a href="/" className="w-full">
+        <div className="flex flex-col text-xs w-20 h-[100vh] pr-1 items-center border-r transition-all duration-300">
+          <Link to="/" className="w-full">
             <div className="flex flex-col items-center py-4 rounded-md hover:bg-zinc-200 w-full">
               <GoHomeFill size="1.5rem" className="mb-1" />
               <span>Home</span>
             </div>
-          </a>
+          </Link>
           <div className="flex flex-col items-center py-4 rounded-md hover:bg-zinc-200 w-full">
           <SiYoutubeshorts size="1.5rem" className="mb-1" />
             <span>Shorts</span>
@@ -48,7 +44,7 @@ function Sidebar() {
         </div>
         
    ) : (
-        <div className="shadow-lg w-[220px]">
+        <div className="p-1 col-span-1 max-h-screen hover:overflow-y-scroll overflow-hidden overscroll-contain sticky top-[65px] z-50 bg-white w-[220px]">
           <div className="flex flex-col text-sm px-3 pl-2 pr-6 pb-4">
             <a href="/">
               <div className="flex items-center w-full py-2 px-4 hover:bg-zinc-100 rounded-md">

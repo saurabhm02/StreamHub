@@ -1,10 +1,10 @@
 import React from 'react'
 import TagList from '../tagList/TagList'
-import VideoContainer from '../videoContainer/VideoContainer'
+import VideoContainer from '../videos/VideoContainer'
 
 const MainContainer = () => {
   return (
-    <div className="col-span-11">
+    <div className="px-3 col-span-11">
         <TagList/>
         <VideoContainer/>
     </div>
