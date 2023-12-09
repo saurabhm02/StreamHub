@@ -2,8 +2,10 @@ import React, { useRef, useEffect } from 'react';
 import { tags } from '../../utils/constant';
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import Tag from './Tag';
+import { useSelector } from 'react-redux';
 
 const TagList = () => {
+  const isMenuOpen = useSelector((store) => store.app.isMenuOpen);
   const scrollRef = useRef(null);
 
   const prevIcon = () => {
@@ -31,18 +33,23 @@ const TagList = () => {
   }, []);
 
   return (
-    <div className="flex sticky top-[64px] z-40 bg-white pb-2">
-      <button onClick={prevIcon} className="hover:rounded-full w-10 h-10 mr-2 hover:bg-gray-100 fixed z-50">
+    <div className={`tags mx-2 sticky z-40 flex items-center ${
+          isMenuOpen
+            ? "lg:w-[calc(100vw-19rem)] w-[calc(100vw-8rem)]"
+            : "lg:w-[calc(100vw-8rem)] w-[calc(100vw-3rem)]"
+        } min-w-[250px]
+        pt-2`}
+    >
+      <button onClick={prevIcon} className="hover:rounded-full w-10 h-10 hover:bg-gray-100">
         <FiChevronLeft className="inline-block" />
-        </button>
-      <div ref={scrollRef} className="max-w-[86%] overflow-x-hidden flex mx-12">
-        {
-          tags.map((btnName, index) => {
-            return <Tag key={index} name={btnName} />
-          })
-        }
+      </button>
+
+      <div ref={scrollRef} className=" flex w-full overflow-x-hidden text-sm ">
+        {tags.map((btnName, index) => {
+          return <Tag key={index} Tagname={btnName} />
+        })}
       </div>
-      <button onClick={nextIcon} className="hover:rounded-full w-10 h-10 ml-2 right-20 hover:bg-gray-100 fixed z-50">
+      <button onClick={nextIcon} className="hover:rounded-full w-10 h-10  top-[4.5rem] right-20 hover:bg-gray-100 z-50">
       <FiChevronRight className="inline-block" />
       </button>
     </div>
@@ -50,3 +57,4 @@ const TagList = () => {
 };
 
 export default TagList;
+

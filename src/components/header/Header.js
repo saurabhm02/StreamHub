@@ -7,14 +7,19 @@ import { RiVideoAddLine } from "react-icons/ri";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { FaCircleUser } from "react-icons/fa6";
 import { IoIosSearch } from "react-icons/io";
-import { useDispatch } from 'react-redux';
-import { toggleMenu, toggleSideBar } from '../../utils/appSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleMenu, toggleSideBar } from '../../Redux/appSlice';
 import { useLocation } from 'react-router-dom';
+import { YOUTUBE_SEARCH_API } from '../../utils/constant';
+import { chacheRessults } from '../../Redux/searchSlice';
 
 
 const Header = () => {
 
     const [theme, setTheme] = useState(localStorage.getItem("theme") ? localStorage.getItem("theme") : "light");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [suggestions, setSuggestions] = useState([]); 
+    const [showSuggestions, setShowSuggestions] = useState(false);
 
     useEffect(() =>{
         localStorage.setItem("theme", theme);
@@ -30,14 +35,46 @@ const Header = () => {
             setTheme("light");
         }
     }
-
-    const route = useLocation();
  
     const dispatch = useDispatch();
 
     const toggleMenuHandler = ()=>{
         dispatch(toggleMenu());
     }
+
+    // For search methods
+
+    const searchCache = useSelector((store) => store.search);
+
+    useEffect(() =>{
+  
+        const timer = setTimeout(() => {
+            if(searchCache[searchQuery]){
+                setSuggestions(searchCache[searchQuery]);
+            }
+            else{
+                getSearchSuggestion();
+            }
+        
+        }, 200);
+
+        return () =>{
+            clearTimeout(timer);
+        }; 
+
+    }, [searchQuery]);
+
+   const getSearchSuggestion = async () =>{
+    console.log("searchQuery", searchQuery);
+    const  data = await fetch(YOUTUBE_SEARCH_API + searchQuery);
+    const json = await data.json();
+    setSuggestions(json[1]);
+    dispatch(chacheRessults({
+        [searchQuery] : json[1],
+    }));
+   }
+
+
   return (
     <>
         <div className=" sticky top-0 z-50 bg-white flex justify-between px-5 py-3 w-full shadow-lg items-center">
@@ -63,22 +100,41 @@ const Header = () => {
             </div>
 
 
-            <div className="group flex items-center">
-                <div className="flex h-8 md:h-10 md:ml-12 md:pl-5 border border-[#404040] rounded-l-3xl group-focus-within:border-blue-500 md:group-focus-within:ml-5 md:group-focus-within:pl-0 ">
-                    <div className="w-10 justify-center items-center hidden group-focus-within:md:flex ">
-                        <IoIosSearch className=" text-xl" />
+            <div className="group flex flex-col">
+                <div className="group flex items-center">
+                    <div className="flex h-8 md:h-10 md:ml-12 md:pl-5 border border-[#404040] rounded-l-3xl group-focus-within:border-blue-500 md:group-focus-within:ml-5 md:group-focus-within:pl-0 ">
+                        <div className="w-10 justify-center items-center hidden group-focus-within:md:flex ">
+                            <IoIosSearch className=" text-xl" />
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Search"
+                            className="w-44 px-5 text-sm outline-none md:pl-0 md:group-focus-within:pl-0 md:w-64 lg:w-[500px]"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onFocus={() => setShowSuggestions(true)}
+                            onBlur={() => setShowSuggestions(false)}
+                        /> 
                     </div>
-                    <input
-                        type="text"
-                        placeholder="Search"
-                        className="w-44 px-5 text-sm outline-none md:pl-0 md:group-focus-within:pl-0 md:w-64 lg:w-[500px]"
-                    />
+                    <button
+                        className="w-[40px] md:w-[60px] h-8 md:h-10 flex items-center justify-center border border-l-0 border-[#404040] rounded-r-3xl bg-black/[0.1] dark:bg-white/[0.15]"
+                    >
+                        <IoIosSearch className=" text-xl" />
+                    </button>
                 </div>
-                <button
-                    className="w-[40px] md:w-[60px] h-8 md:h-10 flex items-center justify-center border border-l-0 border-[#404040] rounded-r-3xl bg-black/[0.1] dark:bg-white/[0.15]"
-                >
-                    <IoIosSearch className=" text-xl" />
-                </button>
+                {
+                    showSuggestions && (
+                        <div className="fixed items-start px-1 py-1 w-[32rem] ml-14 bg-white mt-10 rounded-md shadow-lg border border-gray-100">
+                            <ul>
+                                {
+                                    suggestions.map((suggestion) =>(
+                                        <li key={suggestion} className="flex px-3 text-xl gap-2 items-center hover:bg-zinc-200 rounded-md cursor-pointer"> <FiSearch size={17}/> {suggestion}</li>
+                                    ))
+                                }
+                            </ul>
+                        </div>
+                    )
+                }
             </div>
 
                 
