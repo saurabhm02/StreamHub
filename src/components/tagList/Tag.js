@@ -21,7 +21,7 @@ const Tag = ({ Tagname }) => {
         className={`px-3 w-fit py-2 mx-2 cursor-pointer hover:bg-zinc-300 rounded-lg ${
           active === Tagname
               ? "bg-slate-900 text-white "
-              : " bg-gray-100 "
+              : "bg-zinc-100"
           }`}
           onClick={() => handlevideTag(Tagname)}
       >
