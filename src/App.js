@@ -6,7 +6,7 @@ import store from "./Redux/store";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Error from "./components/Error/Error";
 import MainContainer from "./components/mainContainer/MainContainer";
-import WatchPage from "./components/videos/WatchPage";
+import WatchPage from "./components/watchPage/WatchPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 
