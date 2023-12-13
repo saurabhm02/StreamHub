@@ -5,22 +5,40 @@ import RecommendationVideo from './RecommendationVideo';
 import { ShimmerRecommemdedVideo } from '../../utils/Shimmer';
 import { Link } from 'react-router-dom';
 
-const Recommendations = () => {
-
+const Recommendations = ({ videoId, videoTitle }) => {
+    const [suggestedVideos, setSuggestedVideos] = useState(null); 
     const channelId=useSelector((store)=> store.channelId.channelId);
-    const [recVideoList,setRecVideoList]=useState(null);
+    
 
     useEffect(()=>{
-        fetchData();
+      searchVideoByKeyword();
     },[])
+    const searchVideoByKeyword = async (searchText) => {
+      const response = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&maxResults=8&type=video&q=${searchText}&order=viewCount&videoDuration=medium&key=AIzaSyB8msfjO04lXVEyknHCWjbmelwdhb8cfGg`);
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(data.error);
+        throw new Error(data.error.message);
+      }
+      return data.items;
+    };
+
+    useEffect(()=>{
+      getSuggestedVideos();
+    },[])
+    const getSuggestedVideos = async () => {
+      const response = await fetch(`https://youtube.googleapis.com/youtube/v3/search?part=snippet&relatedToVideoId=${videoId}&maxResults=25&type=video&key=AIzaSyB8msfjO04lXVEyknHCWjbmelwdhb8cfGg`);
+      const data = await response.json();
+      if (!response.ok) {
+        console.log(data.error);
+        return searchVideoByKeyword(videoTitle);
+      }
+      setSuggestedVideos(data.items);
+    };
+
+
   
-    const fetchData=async ()=>{
-        const data=await fetch(video_recommendations_api+channelId);
-        const jsondata=await data.json();
-        setRecVideoList(jsondata?.items);
-    }
-  
-    return recVideoList==null?<div>
+    return suggestedVideos === null?<div>
         <ShimmerRecommemdedVideo/>
         <ShimmerRecommemdedVideo/>
         <ShimmerRecommemdedVideo/>
@@ -37,12 +55,26 @@ const Recommendations = () => {
         <ShimmerRecommemdedVideo/>
     </div>:(
     <div>
-      {
-        // Recommended Video Lists
+      {/* {
         recVideoList.map((recvideo,index)=> <Link to={"/watch?v="+recvideo?.contentDetails?.upload?.videoId} key={index}><RecommendationVideo data={recvideo}/></Link> )
+      } */}
+
+      {suggestedVideos.length > 0 &&
+        suggestedVideos.map((suggestedVideo) => {
+          return (
+            <Link
+              to={`/watch?v=${suggestedVideo?.id?.videoId}`}
+              key={suggestedVideo?.id?.videoId}
+            >
+              <RecommendationVideo video={suggestedVideo}/>
+            </Link>
+          );
+        } )
       }
     </div>
   )
 }
 
-export default Recommendations
+export default Recommendations;
+
+
